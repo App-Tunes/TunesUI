@@ -8,44 +8,45 @@
 import SwiftUI
 
 public struct ResamplingWaveformView: View {
-	public var gradient: [Color]
+	public var colorLUT: [CGColor]
 	@ObservedObject public var waveform: ResamplingWaveform
+	public var spacing: Float = 1
+	public var pixelsPerBar: CGFloat = 4
+	public var changeDuration: TimeInterval = 0.2
 	
-	public init(gradient: [Color], waveform: ResamplingWaveform) {
-		self.gradient = gradient
+	public init(
+		colorLUT: [CGColor],
+		waveform: ResamplingWaveform,
+		spacing: Float = 1,
+		pixelsPerBar: CGFloat = 4,
+		changeDuration: TimeInterval = 0.2
+	) {
+		self.colorLUT = colorLUT
 		self.waveform = waveform
+		self.spacing = spacing
+		self.pixelsPerBar = pixelsPerBar
+		self.changeDuration = changeDuration
 	}
 
 	public var body: some View {
 		WaveformView(
-			data: waveform.loudness.map { CGFloat($0) },
-			color: waveform.pitch.map {
-				$0.isFinite ? gradient[Int(round(max(0, min(1, $0)) * 255))] : .white
-			}
+			colorLUT: colorLUT,
+			waveform: waveform.waveform,
+			spacing: spacing,
+			changeDuration: changeDuration
 		)
 			.onGeoChange { geo in
-				waveform.updateSamples(Int(geo.size.width / 4))
+				waveform.updateSamples(Int(geo.size.width / pixelsPerBar))
 			}
 	}
 }
 
 struct ResamplingWaveformView_Previews: PreviewProvider {
-	static func waveform() -> Waveform {
-		Waveform(
-			loudness: (0...80).map {
-				(sin(Float($0) / 3) + 1) / 2
-			},
-			pitch: (0...80).map {
-				(sin(Float($0) / 2) + 1) / 2
-			}
-		)
-	}
-
 	static var previews: some View {
 		ResamplingWaveformView(
-			gradient: Gradients.pitch,
-			waveform: ResamplingWaveform.constant(waveform(), resample: ResamplingWaveform.resampleNearest)
+			colorLUT: Gradients.pitchCG,
+			waveform: ResamplingWaveform.constant(WaveformView_Previews.waveform(), resample: ResamplingWaveform.resampleNearest)
 		)
-			.frame(width: 500, height: 100)
+			.frame(minWidth: 100, minHeight: 30)
 	}
 }

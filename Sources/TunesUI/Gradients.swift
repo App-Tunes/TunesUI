@@ -273,4 +273,8 @@ public class Gradients {
 	public static let pitch = pitchRaw.map {
 		Color(red: $0[0], green: $0[1], blue: $0[2])
 	}
+
+	public static let pitchCG = pitchRaw.map {
+		CGColor(red: CGFloat($0[0]), green: CGFloat($0[1]), blue: CGFloat($0[2]), alpha: 1)
+	}
 }

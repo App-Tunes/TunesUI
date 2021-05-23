@@ -41,6 +41,25 @@ public struct PositionControl: View {
 	@State var mousePositionSteps: Int? = nil
 	@State var isDragging = false
 	
+	public init(
+		currentTimeProvider: @escaping () -> TimeInterval?,
+		currentTime: TimeInterval? = nil,
+		duration: TimeInterval,
+		advancesAutomatically: Bool,
+		moveStepDuration: TimeInterval? = nil,
+
+		moveTo: @escaping (TimeInterval) -> Void,
+		moveBy: ((TimeInterval) -> Void)? = nil
+	) {
+		self.currentTimeProvider = currentTimeProvider
+		self.currentTime = currentTime
+		self.duration = duration
+		self.advancesAutomatically = advancesAutomatically
+		
+		self.moveTo = moveTo
+		self.moveBy = moveBy
+	}
+	
 	public func updatePosition() {
 		guard let currentTime = currentTimeProvider() else {
 			return

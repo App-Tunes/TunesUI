@@ -13,5 +13,10 @@ public struct Waveform: Hashable, Codable {
 	
 	public var count: Int { min(loudness.count, pitch.count) }
 	
+	public init(loudness: [Float], pitch: [Float]) {
+		self.loudness = loudness
+		self.pitch = pitch
+	}
+	
 	static public var empty: Waveform = .init(loudness: [], pitch: [])
 }

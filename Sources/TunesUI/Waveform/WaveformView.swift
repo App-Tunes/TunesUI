@@ -12,6 +12,11 @@ public struct WaveformView: View {
 	public let data: [CGFloat]
 	public let color: [Color]
 
+	public init(data: [CGFloat], color: [Color]) {
+		self.data = data
+		self.color = color
+	}
+	
 	public var body: some View {
 		let count = min(data.count, color.count)
 		

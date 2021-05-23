@@ -10,6 +10,11 @@ import SwiftUI
 public struct ResamplingWaveformView: View {
 	public var gradient: [Color]
 	@ObservedObject public var waveform: ResamplingWaveform
+	
+	public init(gradient: [Color], waveform: ResamplingWaveform) {
+		self.gradient = gradient
+		self.waveform = waveform
+	}
 
 	public var body: some View {
 		WaveformView(

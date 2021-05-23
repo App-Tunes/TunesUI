@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 extension TimeInterval {
 	public var humanReadableText: String {
 		let totalSeconds = Int(rounded())
@@ -40,6 +38,16 @@ public struct CountdownText: View {
 		} : nil
 	}
 	
+	public init(to referenceDate: Date, currentDate: Date = Date(), advancesAutomatically: Bool = true, maxDate: Date? = nil, minDate: Date? = nil) {
+		self.referenceDate = referenceDate
+		self._currentDate = State(initialValue: currentDate)
+		
+		self.advancesAutomatically = advancesAutomatically
+		
+		self.maxDate = maxDate
+		self.minDate = minDate
+	}
+	
 	public func update() {
 		self.currentDate = Date()
 		
@@ -63,12 +71,7 @@ public struct CountdownText: View {
 struct CountdownText_Previews: PreviewProvider {
 	static var previews: some View {
 		let end = Date().advanced(by: 10)
-		return CountdownText(
-			referenceDate: end,
-			currentDate: Date(),
-			advancesAutomatically: true,
-			maxDate: end
-		)
+		return CountdownText(to: end, maxDate: end)
 			.frame(width: 60, height: 15)
 	}
 }

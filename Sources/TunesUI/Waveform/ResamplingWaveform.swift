@@ -11,10 +11,10 @@ import Combine
 public class ResamplingWaveform: ObservableObject {
 	public typealias Resampler = ([Float], Int) throws -> [Float]
 	
-	@Published var source: Waveform = .empty
-	@Published var desiredCount: Int = 0
+	@Published public var source: Waveform = .empty
+	@Published public var desiredCount: Int = 0
 
-	@Published var waveform: Waveform = .empty
+	@Published public var waveform: Waveform = .empty
 	
 	private var observer: AnyCancellable?
 

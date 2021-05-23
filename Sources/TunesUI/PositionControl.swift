@@ -25,7 +25,7 @@ public struct VBar : Shape {
 	}
 }
 
-struct PositionControl: View {
+public struct PositionControl: View {
 	public var currentTimeProvider: () -> TimeInterval?
 	@State public var currentTime: TimeInterval? = nil
 	public var duration: TimeInterval

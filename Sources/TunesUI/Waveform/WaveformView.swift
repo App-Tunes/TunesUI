@@ -75,11 +75,14 @@ public class WaveformLayer: CALayer {
 			return
 		}
 		
-		guard duration > 0 else {
+		guard duration > 0, waveform.count == self.waveform.count else {
+			// If counts are unequal, the animation won't look good
 			self.waveform = waveform
 			return
 		}
 		
+		ensureSublayerCount(waveform.count, of: CAShapeLayer.self)
+
 		CATransaction.begin()
 		CATransaction.setAnimationDuration(duration)
 		CATransaction.setAnimationTimingFunction(.init(name: .linear))

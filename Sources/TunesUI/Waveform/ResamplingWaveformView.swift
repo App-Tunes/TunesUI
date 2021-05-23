@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct ResamplingWaveformView: View {
-	var gradient: [Color]
-	@ObservedObject var waveform: ResamplingWaveform
+public struct ResamplingWaveformView: View {
+	public var gradient: [Color]
+	@ObservedObject public var waveform: ResamplingWaveform
 
-	var body: some View {
+	public var body: some View {
 		WaveformView(
 			data: waveform.loudness.map { CGFloat($0) },
 			color: waveform.pitch.map {

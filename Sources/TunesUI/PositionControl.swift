@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct VBar : Shape {
-	var position: CGFloat
+public struct VBar : Shape {
+	public var position: CGFloat
 
-	func path(in rect: CGRect) -> Path {
+	public func path(in rect: CGRect) -> Path {
 		var path = Path()
 
 		path.move(to: .init(x: rect.size.width * position, y: rect.size.height))
@@ -19,21 +19,21 @@ struct VBar : Shape {
 		return path
 	}
 
-	var animatableData: CGFloat {
+	public var animatableData: CGFloat {
 		get { return position }
 		set { position = newValue }
 	}
 }
 
 struct PositionControl: View {
-	var currentTimeProvider: () -> TimeInterval?
-	@State var currentTime: TimeInterval? = nil
-	var duration: TimeInterval
-	var advancesAutomatically: Bool
-	var moveStepDuration: TimeInterval? = nil
+	public var currentTimeProvider: () -> TimeInterval?
+	@State public var currentTime: TimeInterval? = nil
+	public var duration: TimeInterval
+	public var advancesAutomatically: Bool
+	public var moveStepDuration: TimeInterval? = nil
 
-	var moveTo: (TimeInterval) -> Void
-	var moveBy: ((TimeInterval) -> Void)? = nil
+	public var moveTo: (TimeInterval) -> Void
+	public var moveBy: ((TimeInterval) -> Void)? = nil
 
 	// 'free' mouse position vs 'stepped' are handled differently,
 	// so 'stepped' is animated properly and the jump can be exact
@@ -41,7 +41,7 @@ struct PositionControl: View {
 	@State var mousePositionSteps: Int? = nil
 	@State var isDragging = false
 	
-	func updatePosition() {
+	public func updatePosition() {
 		guard let currentTime = currentTimeProvider() else {
 			return
 		}
@@ -57,7 +57,7 @@ struct PositionControl: View {
 		}
 	}
 	
-	func click(at point: CGFloat) {
+	public func click(at point: CGFloat) {
 		let pointTime = TimeInterval(point) * duration
 
 		if
@@ -75,7 +75,7 @@ struct PositionControl: View {
 		}
 	}
 	
-	func updateMousePosition(at point: CGFloat) {
+	public func updateMousePosition(at point: CGFloat) {
 		let pointTime = TimeInterval(point) * duration
 
 		guard
@@ -93,7 +93,7 @@ struct PositionControl: View {
 		updatePosition()  // To start animating mouse too
 	}
 	
-	var body: some View {
+	public var body: some View {
 		GeometryReader { geo in
 			ZStack {
 				let width = max(1, min(2, 3 - geo.size.height / 20)) + 0.5

@@ -9,5 +9,5 @@ import Foundation
 import SwiftUI
 
 extension Animation {
-	static var instant: Animation { .linear(duration: 0) }
+	public static var instant: Animation { .linear(duration: 0) }
 }

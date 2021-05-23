@@ -10,7 +10,7 @@ import SwiftUI
 import SwiftUI
 
 extension TimeInterval {
-	var humanReadableText: String {
+	public var humanReadableText: String {
 		let totalSeconds = Int(rounded())
 		let hours: Int = Int(totalSeconds / 3600)
 		
@@ -25,22 +25,22 @@ extension TimeInterval {
 	}
 }
 
-struct CountdownText: View {
-	var referenceDate: Date
-	@State var currentDate: Date
+public struct CountdownText: View {
+	public var referenceDate: Date
+	@State public var currentDate: Date
 	
-	var advancesAutomatically: Bool = true
+	public var advancesAutomatically: Bool = true
 	
-	var maxDate: Date? = nil
-	var minDate: Date? = nil
+	public var maxDate: Date? = nil
+	public var minDate: Date? = nil
 
-	var timer: Timer? {
+	public var timer: Timer? {
 		advancesAutomatically ? Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
 			update()
 		} : nil
 	}
 	
-	func update() {
+	public func update() {
 		self.currentDate = Date()
 		
 		if let minDate = minDate {
@@ -51,7 +51,7 @@ struct CountdownText: View {
 		}
 	}
 
-	var body: some View {
+	public var body: some View {
 		Text(abs(referenceDate.timeIntervalSince(currentDate)).humanReadableText)
 			.onAppear(perform: {
 				let _ = self.timer

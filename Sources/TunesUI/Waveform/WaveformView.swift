@@ -8,11 +8,11 @@
 import SwiftUI
 import Combine
 
-struct WaveformView: View {
-	let data: [CGFloat]
-	let color: [Color]
+public struct WaveformView: View {
+	public let data: [CGFloat]
+	public let color: [Color]
 
-	var body: some View {
+	public var body: some View {
 		let count = min(data.count, color.count)
 		
 		GeometryReader { geo in

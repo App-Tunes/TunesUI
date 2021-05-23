@@ -8,8 +8,8 @@
 import Foundation
 import Combine
 
-class ResamplingWaveform: ObservableObject {
-	typealias Resampler = ([Float], Int) throws -> [Float]
+public class ResamplingWaveform: ObservableObject {
+	public typealias Resampler = ([Float], Int) throws -> [Float]
 	
 	@Published var source: Waveform = .empty
 	@Published var desiredCount: Int = 0
@@ -18,7 +18,7 @@ class ResamplingWaveform: ObservableObject {
 	
 	private var observer: AnyCancellable?
 
-	init(debounce: TimeInterval, resample: @escaping Resampler) {
+	public init(debounce: TimeInterval, resample: @escaping Resampler) {
 		observer = $source.combineLatest($desiredCount)
 			.debounce(for: .seconds(debounce), scheduler: DispatchQueue.global(qos: .default))
 			.removeDuplicates { l, r in
@@ -38,19 +38,19 @@ class ResamplingWaveform: ObservableObject {
 			}
 	}
 	
-	static func constant(_ waveform: Waveform, resample: @escaping Resampler) -> ResamplingWaveform {
+	public static func constant(_ waveform: Waveform, resample: @escaping Resampler) -> ResamplingWaveform {
 		let rs = ResamplingWaveform(debounce: 0, resample: resample)
 		rs.source = waveform
 		rs.desiredCount = waveform.count
 		return rs
 	}
 	
-	func updateSamples(_ desired: Int) {
+	public func updateSamples(_ desired: Int) {
 		setIfDifferent(self, \.desiredCount, desired)
 	}
 	
-	var loudness: [Float] { waveform.loudness }
-	var pitch: [Float] { waveform.pitch }
+	public var loudness: [Float] { waveform.loudness }
+	public var pitch: [Float] { waveform.pitch }
 }
 
 extension ResamplingWaveform {

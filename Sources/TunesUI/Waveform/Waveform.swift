@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct Waveform: Hashable, Codable {
-	var loudness: [Float]
-	var pitch: [Float]
+public struct Waveform: Hashable, Codable {
+	public var loudness: [Float]
+	public var pitch: [Float]
 	
-	var count: Int { min(loudness.count, pitch.count) }
+	public var count: Int { min(loudness.count, pitch.count) }
 	
-	static var empty: Waveform = .init(loudness: [], pitch: [])
+	static public var empty: Waveform = .init(loudness: [], pitch: [])
 }

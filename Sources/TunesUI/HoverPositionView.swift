@@ -7,24 +7,25 @@
 
 import SwiftUI
 
-class NSHoverPosition: NSView {
-	var onChanged:  (CGPoint) -> Void
-	var onEnded:  () -> Void
+public class NSHoverPosition: NSView {
+	public var onChanged:  (CGPoint) -> Void
+	public var onEnded:  () -> Void
 
-	var isInside = false
+	public var isInside = false
+	
 	private var trackingArea: NSTrackingArea?
 
-	init(onChanged: @escaping (CGPoint) -> Void, onEnded: @escaping () -> Void) {
+	public init(onChanged: @escaping (CGPoint) -> Void, onEnded: @escaping () -> Void) {
 		self.onChanged = onChanged
 		self.onEnded = onEnded
 		super.init(frame: NSRect())
 	}
 	
-	override func viewWillMove(toWindow newWindow: NSWindow?) {
+	public override func viewWillMove(toWindow newWindow: NSWindow?) {
 		newWindow?.acceptsMouseMovedEvents = true
 	}
 	
-	required init?(coder: NSCoder) { fatalError() }
+	required public init?(coder: NSCoder) { fatalError() }
 	
 	public override func updateTrackingAreas() {
 		trackingArea.map(removeTrackingArea)
@@ -39,7 +40,7 @@ class NSHoverPosition: NSView {
 		isInside = true
 	}
 
-	override func mouseMoved(with event: NSEvent) {
+	public override func mouseMoved(with event: NSEvent) {
 		if isInside {
 			let location = convert(event.locationInWindow, from: nil)
 			onChanged(location)
@@ -52,22 +53,22 @@ class NSHoverPosition: NSView {
 	}
 }
 
-struct HoverPosition: NSViewRepresentable {
-	var onChanged:  (CGPoint) -> Void
-	var onEnded:  () -> Void
+public struct HoverPosition: NSViewRepresentable {
+	public var onChanged:  (CGPoint) -> Void
+	public var onEnded:  () -> Void
 
-	func makeNSView(context: NSViewRepresentableContext<HoverPosition>) -> NSHoverPosition {
+	public func makeNSView(context: NSViewRepresentableContext<HoverPosition>) -> NSHoverPosition {
 		NSHoverPosition(onChanged: onChanged, onEnded: onEnded)
 	}
 
-	func updateNSView(_ nsView: NSHoverPosition, context: NSViewRepresentableContext<HoverPosition>) {
+	public func updateNSView(_ nsView: NSHoverPosition, context: NSViewRepresentableContext<HoverPosition>) {
 		nsView.onChanged = onChanged
 		nsView.onEnded = onEnded
 	}
 }
 
 extension View {
-	func onHoverLocation(onChanged: @escaping (CGPoint) -> Void = {_ in }, onEnded: @escaping () -> Void = {}) -> some View {
+	public func onHoverLocation(onChanged: @escaping (CGPoint) -> Void = {_ in }, onEnded: @escaping () -> Void = {}) -> some View {
 		background(HoverPosition(onChanged: onChanged, onEnded: onEnded))
 	}
 }

@@ -19,4 +19,9 @@ public struct Waveform: Hashable, Codable {
 	}
 	
 	static public var empty: Waveform = .init(loudness: [], pitch: [])
+
+	static public func zero(count: Int) -> Waveform {
+		let zero: [Float] = Array(repeating: 0.0, count: count)
+		return Waveform(loudness: zero, pitch: zero)
+	}
 }

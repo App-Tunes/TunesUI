@@ -25,7 +25,7 @@ public class ResamplingWaveform: ObservableObject {
 				l.0 == r.0 && l.1 == r.1
 			}
 			.map { [weak self] waveform, samples in
-				guard let source = self?.source else { return Waveform.empty }
+				guard let source = self?.source else { return Waveform.zero(count: samples) }
 				
 				return Waveform(
 					loudness: (try? resample(source.loudness, samples)) ?? [],

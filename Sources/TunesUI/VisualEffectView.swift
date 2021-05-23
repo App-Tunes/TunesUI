@@ -71,14 +71,13 @@ struct VisualEffectView_Previews: PreviewProvider {
 	static var previews: some View {
 		// Doesn't work well somehow
 		return ZStack {
-			Rectangle()
-				.fill(Color.blue)
-			
+			Image(nsImage: .init(named: NSImage.folderSmartName)!)
+				.resizable()
+
 			VisualEffectView(material: .underPageBackground, blendingMode: .withinWindow, emphasized: true)
 			
-			Image(systemName: "gift.circle.fill")
-				.font(.system(size: 300))
-				.foregroundColor(.red)
+			Image(nsImage: .init(named: NSImage.folderSmartName)!)
+				.resizable()
 		}
 	}
 }

@@ -11,7 +11,7 @@ import Combine
 public class ResamplingWaveform: ObservableObject {
 	public typealias Resampler = ([Float], Int) throws -> [Float]
 	
-	@Published public var source: Waveform = .empty
+	@Published public var source: Waveform? = nil
 	@Published public var desiredCount: Int = 0
 
 	@Published public var waveform: Waveform = .empty
@@ -25,12 +25,15 @@ public class ResamplingWaveform: ObservableObject {
 				l.0 == r.0 && l.1 == r.1
 			}
 			.map { [weak self] waveform, samples in
-				guard let source = self?.source else { return Waveform.zero(count: samples) }
-				
-				return Waveform(
-					loudness: (try? resample(source.loudness, samples)) ?? [],
-					pitch: (try? resample(source.pitch, samples)) ?? []
-				)
+				guard
+					let source = self?.source,
+					let loudness = try? resample(source.loudness, samples),
+					let pitch = try? resample(source.pitch, samples)
+				else {
+					return Waveform.zero(count: samples)
+				}
+								
+				return Waveform(loudness: loudness, pitch: pitch)
 			}
 			.receive(on: RunLoop.main)
 			.sink { [weak self] in

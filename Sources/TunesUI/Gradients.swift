@@ -8,10 +8,10 @@
 import SwiftUI
 
 // From ./materials
-class Gradients {
+public class Gradients {
 	// Length = 255, for byte lookup :>
 	
-	static let pitchRaw: [[Double]] = [
+	public static let pitchRaw: [[Double]] = [
 		[0.7500196 ,0.50868763,0.42006528],
 		[0.74907236,0.51060599,0.41787609],
 		[0.74818483,0.51247008,0.41577816],
@@ -270,7 +270,7 @@ class Gradients {
 		[0.70999092,0.73946684,0.97417814]
 	]
 
-	static let pitch = pitchRaw.map {
+	public static let pitch = pitchRaw.map {
 		Color(red: $0[0], green: $0[1], blue: $0[2])
 	}
 }

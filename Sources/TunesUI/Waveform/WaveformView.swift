@@ -30,7 +30,7 @@ struct WaveformView: View {
 	}
 }
 
-struct ResamplingWaveformView_Previews: PreviewProvider {
+struct WaveformView_Previews: PreviewProvider {
 	static var previews: some View {
 		WaveformView(
 			data: [1, 0.5, 0.3, 0],

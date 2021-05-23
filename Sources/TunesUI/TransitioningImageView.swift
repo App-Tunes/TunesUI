@@ -48,38 +48,30 @@ public struct TransitioningImageView: NSViewRepresentable {
 }
 
 struct TransitioningImageView_Previews: PreviewProvider {
-	class TickingWrapper<Object>: ObservableObject {
-		@Published var state: Object
-		var timer: Timer?
-		
-		init(_ states: [Object]) {
-			var i = 0
-			
-			self.state = states.first!
-			
-			timer = .scheduledTimer(withTimeInterval: 1, repeats: true, block: { [weak self] timer in
-				let c = i % states.count
-				let img = states[c]
-				self?.state = img
-				i += 1
-			})
-		}
-	}
-	
 	struct TickingImageView: View {
-		@ObservedObject var ticker: TickingWrapper<NSImage>
+		var images: [NSImage]
+		@State var image: NSImage? = nil
 		
 		var body: some View {
-			TransitioningImageView(ticker.state)
+			VStack {
+				HStack {
+					ForEach(0..<images.count) { i in
+						let image = images[i]
+						Button("Image \(i)") {
+							self.image = image
+						}
+					}
+				}
+				
+				TransitioningImageView(image)
+			}
 		}
 	}
 	
     static var previews: some View {
-		let ticker = TickingWrapper([
+		return TickingImageView(images: [
 			NSImage(named: NSImage.folderBurnableName)!,
 			NSImage(named: NSImage.folderSmartName)!,
 		])
-		
-		return TickingImageView(ticker: ticker)
     }
 }

@@ -43,9 +43,7 @@ struct ResamplingWaveformView_Previews: PreviewProvider {
 
 	static var previews: some View {
 		ResamplingWaveformView(
-			gradient: (0...255).map {
-				Color(red: Double($0) / 255, green: 0, blue: 0)
-			},
+			gradient: Gradients.pitch,
 			waveform: ResamplingWaveform.constant(waveform(), resample: ResamplingWaveform.resampleNearest)
 		)
 			.frame(width: 500, height: 100)

@@ -23,7 +23,7 @@ extension NSImageView {
 }
 
 
-struct TransitioningImageView: NSViewRepresentable {
+public struct TransitioningImageView: NSViewRepresentable {
 	public var image: NSImage
 	public var duration: Double = 0.2
 	public var timing: CAMediaTimingFunctionName = .easeInEaseOut

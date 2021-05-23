@@ -24,12 +24,12 @@ extension NSImageView {
 
 
 public struct TransitioningImageView: NSViewRepresentable {
-	public var image: NSImage
+	public var image: NSImage?
 	public var duration: Double = 0.2
 	public var timing: CAMediaTimingFunctionName = .easeInEaseOut
 	public var scaling: NSImageScaling = .scaleAxesIndependently
 	
-	public init(_ image: NSImage, duration: Double = 0.2, timing: CAMediaTimingFunctionName = .easeInEaseOut, scaling: NSImageScaling = .scaleAxesIndependently) {
+	public init(_ image: NSImage?, duration: Double = 0.2, timing: CAMediaTimingFunctionName = .easeInEaseOut, scaling: NSImageScaling = .scaleAxesIndependently) {
 		self.image = image
 		self.duration = duration
 		self.timing = timing

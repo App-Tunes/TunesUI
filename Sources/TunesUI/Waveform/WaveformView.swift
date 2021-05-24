@@ -154,14 +154,14 @@ extension WaveformViewCocoa: CALayerDelegate {
 
 public struct WaveformView: NSViewRepresentable {
 	public var colorLUT: [CGColor]
-	public var waveform: Waveform
+	public var waveform: Waveform?
 	public var spacing: Float = 1
 	public var changeDuration: TimeInterval = 0.2
 	public var resample: ResamplingWaveform.Resampler? = nil
 
 	public init(
 		colorLUT: [CGColor],
-		waveform: Waveform,
+		waveform: Waveform?,
 		spacing: Float = 1,
 		changeDuration: TimeInterval = 0.2,
 		resample: ResamplingWaveform.Resampler? = nil

@@ -25,7 +25,6 @@ public class WaveformViewCocoa: NSView {
 	public var spacing: CGFloat = 1 { didSet {
 		if spacing != oldValue { needsLayout = true }
 	} }
-	public var changeDuration: CFTimeInterval = 0.2
 	public var pixelsPerBar: CGFloat = 4 { didSet {
 		calculateDesiredCount()
 	} }
@@ -39,7 +38,7 @@ public class WaveformViewCocoa: NSView {
 		if displayWaveform != oldValue { needsLayout = true }
 	} }
 
-	public init(colorLUT: [CGColor], debounce: TimeInterval = 0.2) {
+	public init(colorLUT: [CGColor], debounce: TimeInterval = 0.1) {
 		self.colorLUT = colorLUT
 		self.resamplingWaveform = .init(debounce: debounce, resample: nil)
 		super.init(frame: NSRect())
@@ -156,25 +155,25 @@ public struct WaveformView: NSViewRepresentable {
 	public var colorLUT: [CGColor]
 	public var waveform: Waveform?
 	public var spacing: Float = 1
-	public var changeDuration: TimeInterval = 0.2
+	public var debounce: TimeInterval = 0.1
 	public var resample: ResamplingWaveform.Resampler? = nil
 
 	public init(
 		colorLUT: [CGColor],
 		waveform: Waveform?,
 		spacing: Float = 1,
-		changeDuration: TimeInterval = 0.2,
+		debounce: TimeInterval = 0.1,
 		resample: ResamplingWaveform.Resampler? = nil
 	) {
 		self.colorLUT = colorLUT
 		self.waveform = waveform
 		self.spacing = spacing
-		self.changeDuration = changeDuration
+		self.debounce = debounce
 		self.resample = resample
 	}
 
 	public func makeNSView(context: NSViewRepresentableContext<WaveformView>) -> WaveformViewCocoa {
-		let nsView = WaveformViewCocoa(colorLUT: colorLUT)
+		let nsView = WaveformViewCocoa(colorLUT: colorLUT, debounce: debounce)
 		nsView.waveform = waveform
 		nsView.spacing = CGFloat(spacing)
 		return nsView
@@ -185,7 +184,6 @@ public struct WaveformView: NSViewRepresentable {
 		nsView.colorLUT = colorLUT
 		nsView.waveform = waveform
 		nsView.spacing = CGFloat(spacing)
-		nsView.changeDuration = CFTimeInterval(changeDuration)
 		nsView.resample = resample
 	}
 }

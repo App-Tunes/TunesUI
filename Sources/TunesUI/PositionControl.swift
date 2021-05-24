@@ -245,34 +245,40 @@ public struct PositionControlView: NSViewRepresentable {
 	public var jumpInterval: CGFloat?
 	public var useJumpInterval: (() -> Bool)?
 	
-	public var barWidth: CGFloat
-	public var barColor: CGColor
-	public var hoverColor: CGColor
+	public var barWidth: CGFloat = 2
+	public var barColor: CGColor = NSColor.controlTextColor.cgColor
+	public var hoverColor: CGColor = NSColor.controlColor.cgColor
 	
 	public init(
 		locationProvider: @escaping () -> CGFloat?,
 		range: ClosedRange<CGFloat> = 0...1,
-		
-		action: ((PositionMovement) -> Void)? = nil,
-		
-		jumpInterval: CGFloat? = nil,
-		useJumpInterval: (() -> Bool)? = nil,
-		
-		barWidth: CGFloat = 2,
-		barColor: CGColor = NSColor.controlTextColor.cgColor,
-		hoverColor: CGColor = NSColor.controlColor.cgColor
+		action: ((PositionMovement) -> Void)? = nil
 	) {
 		self.locationProvider = locationProvider
 		self.range = range
 		self.action = action
-		self.jumpInterval = jumpInterval
-		self.useJumpInterval = useJumpInterval
-		
-		self.barWidth = barWidth
-		self.barColor = barColor
-		self.hoverColor = hoverColor
 	}
 	
+	public func jumpInterval(_ jumpInterval: CGFloat?, useWhen: (() -> Bool)? = nil) -> PositionControlView {
+		var copy = self
+		copy.jumpInterval = jumpInterval
+		copy.useJumpInterval = useWhen
+		return copy
+	}
+	
+	public func barWidth(_ barWidth: CGFloat) -> PositionControlView {
+		var copy = self
+		copy.barWidth = barWidth
+		return copy
+	}
+
+	public func barColor(_ barColor: CGColor, hover: CGColor = NSColor.controlColor.cgColor) -> PositionControlView {
+		var copy = self
+		copy.barColor = barColor
+		copy.hoverColor = hover
+		return copy
+	}
+
 	public func makeNSView(context: NSViewRepresentableContext<PositionControlView>) -> PositionControlCocoa {
 		PositionControlCocoa()
 	}
@@ -311,9 +317,10 @@ struct PositionControlView_Previews: PreviewProvider {
 				case .relative(let movement):
 					start = start.addingTimeInterval(Double(-movement))
 				}
-			},
-			jumpInterval: 1,
-			useJumpInterval: { !NSEvent.modifierFlags.contains(.option) }
+			}
 		)
+		.jumpInterval(1) {
+			!NSEvent.modifierFlags.contains(.option)
+		}
 	}
 }

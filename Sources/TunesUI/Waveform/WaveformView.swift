@@ -7,44 +7,104 @@
 
 import Cocoa
 import SwiftUI
+import Combine
 
-public class WaveformLayer: CALayer {
+extension CAAnimation {
+	static func linear(duration: TimeInterval) -> CAAnimation {
+		let animation = CAAnimation()
+		animation.duration = duration
+		animation.timingFunction = .init(name: .linear)
+		return animation
+	}
+}
+
+public class WaveformViewCocoa: NSView {
 	public var colorLUT: [CGColor] { didSet {
-		if colorLUT != oldValue { setNeedsLayout() }
-	} }
-	public var waveform: Waveform { didSet {
-		if waveform != oldValue { setNeedsLayout() }
+		if colorLUT != oldValue { needsLayout = true }
 	} }
 	public var spacing: CGFloat = 1 { didSet {
-		if spacing != oldValue { setNeedsLayout() }
+		if spacing != oldValue { needsLayout = true }
 	} }
+	public var changeDuration: CFTimeInterval = 0.2
+	public var pixelsPerBar: CGFloat = 4 { didSet {
+		calculateDesiredCount()
+	} }
+
+	private let resamplingWaveform: ResamplingWaveform
+	private var waveformObserver: AnyCancellable?
 	
-	public init(colorLUT: [CGColor]) {
+	private var didChangeFrame: Bool = true
+	
+	public private(set) var displayWaveform: Waveform = .empty { didSet {
+		if displayWaveform != oldValue { needsLayout = true }
+	} }
+
+	public init(colorLUT: [CGColor], debounce: TimeInterval = 0.2) {
 		self.colorLUT = colorLUT
-		self.waveform = .empty
-		super.init()
+		self.resamplingWaveform = .init(debounce: debounce, resample: nil)
+		super.init(frame: NSRect())
+
+		wantsLayer = true
+		layer!.contentsGravity = .bottom
+		layer!.delegate = self
+//		layer!.actions = [
+//			kCAOnOrderIn: NSNull(),
+//			kCAOnOrderOut: NSNull(),
+//			"sublayers": NSNull(),
+//			"contents": NSNull(),
+//			"bounds": NSNull(),
+//			"position": NSNull(),
+//			"hidden": NSNull(),
+//		]
+
+		waveformObserver = resamplingWaveform.$waveform.sink { [weak self] in
+			self?.updateDisplayWaveform($0)
+		}
 	}
 	
+	public var waveform: Waveform? {
+		get { resamplingWaveform.source }
+		set { resamplingWaveform.source = newValue }
+	}
+	
+	public var resample: ResamplingWaveform.Resampler? {
+		get { resamplingWaveform.resample }
+		set { resamplingWaveform.resample = newValue }
+	}
+
 	required public init?(coder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
+	private func calculateDesiredCount() {
+		resamplingWaveform.desiredCount = Int(frame.size.width / pixelsPerBar)
+	}
+	
 	private func ensureSublayerCount<T: CALayer>(_ count: Int, of kind: T.Type) {
-		let diffLayers = count - ((sublayers as? [T])?.count ?? 0)
+		let diffLayers = count - ((layer!.sublayers as? [T])?.count ?? 0)
 		
 		if diffLayers > 0 {
-			sublayers = (sublayers ?? []) + (0 ..< diffLayers).map { _ in
-				kind.init()
+			let actions = self.layer!.actions
+			
+			layer!.sublayers = (layer!.sublayers ?? []) + (0 ..< diffLayers).map { _ in
+				let layer = kind.init()
+				layer.delegate = self
+				layer.actions = actions
+				return layer
 			}
+			didChangeFrame = true
 		}
 		else if diffLayers < 0 {
-			sublayers?.removeLast(-diffLayers)
+			layer!.sublayers?.removeLast(-diffLayers)
+			didChangeFrame = true
 		}
 	}
 	
-	public override func layoutSublayers() {
+	public override func layout() {
+		calculateDesiredCount()
+
 		// Multithreading safety, just in case
-		let waveform = self.waveform
+		let waveform = self.displayWaveform
 		let colorLUT = self.colorLUT
 		let barCount = waveform.count
 		
@@ -58,7 +118,7 @@ public class WaveformLayer: CALayer {
 		
 		for i in 0 ..< barCount {
 			let center = (CGFloat(i) + 0.5) * stride
-			let layer = sublayers![i]
+			let layer = layer!.sublayers![i]
 
 			layer.frame = CGRect(
 				x: center - barWidthHalf,
@@ -68,62 +128,27 @@ public class WaveformLayer: CALayer {
 			)
 			layer.backgroundColor = colorLUT[min(colorLUT.count - 1, max(0, Int(waveform.pitch[i] * lutCount)))]
 		}
+		didChangeFrame = false
+
+		super.layout()
 	}
 	
-	public func updateWaveform(_ waveform: Waveform, duration: CFTimeInterval) {
-		guard self.waveform != waveform else {
+	private func updateDisplayWaveform(_ waveform: Waveform) {
+		guard self.displayWaveform != waveform else {
 			return
 		}
 		
-		guard duration > 0, waveform.count == self.waveform.count else {
-			// If counts are unequal, the animation won't look good
-			self.waveform = waveform
-			return
-		}
-		
-		ensureSublayerCount(waveform.count, of: CAShapeLayer.self)
-
-		CATransaction.begin()
-		CATransaction.setAnimationDuration(duration)
-		CATransaction.setAnimationTimingFunction(.init(name: .linear))
-
-		self.waveform = waveform
-
-		CATransaction.commit()
+		displayWaveform = waveform
 	}
 }
 
-public class WaveformViewCocoa: NSView {
-	public init(frame frameRect: NSRect, colorLUT: [CGColor]) {
-		super.init(frame: frameRect)
-
-		self.wantsLayer = true
-		layer = WaveformLayer(colorLUT: colorLUT)
-	}
-	
-	required public init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
-	}
-	
-	public var waveformLayer: WaveformLayer { layer as! WaveformLayer }
-	
-	public var colorLUT: [CGColor] {
-		get { waveformLayer.colorLUT }
-		set { waveformLayer.colorLUT = newValue }
-	}
-
-	public var waveform: Waveform {
-		get { waveformLayer.waveform }
-		set { waveformLayer.waveform = newValue }
-	}
-
-	public var spacing: CGFloat {
-		get { waveformLayer.spacing }
-		set { waveformLayer.spacing = newValue }
-	}
-	
-	public func updateWaveform(_ waveform: Waveform, duration: CFTimeInterval) {
-		waveformLayer.updateWaveform(waveform, duration: duration)
+extension WaveformViewCocoa: CALayerDelegate {
+	public func action(for layer: CALayer, forKey event: String) -> CAAction? {
+		if event == "bounds" || event == "position" {
+			return didChangeFrame || inLiveResize ? NSNull() : nil
+		}
+		
+		return nil
 	}
 }
 
@@ -132,30 +157,36 @@ struct WaveformView: NSViewRepresentable {
 	public var waveform: Waveform
 	public var spacing: Float = 1
 	public var changeDuration: TimeInterval = 0.2
-	
+	public var resample: ResamplingWaveform.Resampler? = nil
+
 	public init(
 		colorLUT: [CGColor],
 		waveform: Waveform,
 		spacing: Float = 1,
-		changeDuration: TimeInterval = 0.2
+		changeDuration: TimeInterval = 0.2,
+		resample: ResamplingWaveform.Resampler? = nil
 	) {
 		self.colorLUT = colorLUT
 		self.waveform = waveform
 		self.spacing = spacing
 		self.changeDuration = changeDuration
+		self.resample = resample
 	}
 
 	public func makeNSView(context: NSViewRepresentableContext<WaveformView>) -> WaveformViewCocoa {
-		let view = WaveformViewCocoa(frame: NSRect(), colorLUT: colorLUT)
-		view.waveform = waveform
-		view.spacing = CGFloat(spacing)
-		return view
+		let nsView = WaveformViewCocoa(colorLUT: colorLUT)
+		nsView.waveform = waveform
+		nsView.spacing = CGFloat(spacing)
+		return nsView
 	}
 
 	public func updateNSView(_ nsView: WaveformViewCocoa, context: NSViewRepresentableContext<WaveformView>) {
+
 		nsView.colorLUT = colorLUT
-		nsView.updateWaveform(waveform, duration: changeDuration)
+		nsView.waveform = waveform
 		nsView.spacing = CGFloat(spacing)
+		nsView.changeDuration = CFTimeInterval(changeDuration)
+		nsView.resample = resample
 	}
 }
 
@@ -180,7 +211,8 @@ struct WaveformView_Previews: PreviewProvider {
 				
 				WaveformView(
 					colorLUT: Gradients.pitchCG,
-					waveform: waveform(shift: shift)
+					waveform: waveform(shift: shift),
+					resample: ResamplingWaveform.resampleNearest
 				)
 			}
 		}

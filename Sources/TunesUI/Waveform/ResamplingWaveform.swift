@@ -11,37 +11,51 @@ import Combine
 public class ResamplingWaveform: ObservableObject {
 	public typealias Resampler = ([Float], Int) throws -> [Float]
 	
+	public let debounce: TimeInterval
+	
 	@Published public var source: Waveform? = nil
 	@Published public var desiredCount: Int = 0
+	@Published public var resample: Resampler?
 
 	@Published public var waveform: Waveform = .empty
 	
 	private var observer: AnyCancellable?
 
-	public init(debounce: TimeInterval, resample: @escaping Resampler) {
-		observer = $source.combineLatest($desiredCount)
-			.debounce(for: .seconds(debounce), scheduler: DispatchQueue.global(qos: .default))
-			.removeDuplicates { l, r in
-				l.0 == r.0 && l.1 == r.1
-			}
-			.map { [weak self] waveform, samples in
-				guard
-					let source = self?.source,
-					let loudness = try? resample(source.loudness, samples),
-					let pitch = try? resample(source.pitch, samples)
-				else {
-					return Waveform.zero(count: samples)
-				}
-								
-				return Waveform(loudness: loudness, pitch: pitch)
-			}
+	public init(debounce: TimeInterval, resample: Resampler?) {
+		self.debounce = debounce
+		self.resample = resample
+		let scheduler = DispatchQueue.global(qos: .default)
+		
+		let liveCount = $desiredCount
+			.debounce(for: .seconds(debounce), scheduler: scheduler)
+			.removeDuplicates()
+		
+		observer = $source.combineLatest(liveCount, $resample)
+			.receive(on: scheduler)
+			.map(Self.resample)
 			.receive(on: RunLoop.main)
 			.sink { [weak self] in
 				self?.waveform = $0
 			}
 	}
 	
-	public static func constant(_ waveform: Waveform, resample: @escaping Resampler) -> ResamplingWaveform {
+	private static func resample(waveform: Waveform?, samples: Int, resample: Resampler?) -> Waveform {
+		guard let resample = resample else {
+			return waveform ?? Waveform.zero(count: samples)
+		}
+		
+		guard
+			let source = waveform,
+			let loudness = try? resample(source.loudness, samples),
+			let pitch = try? resample(source.pitch, samples)
+		else {
+			return Waveform.zero(count: samples)
+		}
+						
+		return Waveform(loudness: loudness, pitch: pitch)
+	}
+	
+	public static func constant(_ waveform: Waveform, resample: Resampler?) -> ResamplingWaveform {
 		let rs = ResamplingWaveform(debounce: 0, resample: resample)
 		rs.source = waveform
 		rs.desiredCount = waveform.count

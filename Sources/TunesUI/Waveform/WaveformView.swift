@@ -152,7 +152,7 @@ extension WaveformViewCocoa: CALayerDelegate {
 	}
 }
 
-struct WaveformView: NSViewRepresentable {
+public struct WaveformView: NSViewRepresentable {
 	public var colorLUT: [CGColor]
 	public var waveform: Waveform
 	public var spacing: Float = 1

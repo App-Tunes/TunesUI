@@ -237,24 +237,40 @@ extension PositionControlCocoa: CALayerDelegate {
 }
 
 public struct PositionControlView: NSViewRepresentable {
-	var locationProvider: () -> CGFloat?
-	var range: ClosedRange<CGFloat>
-	var action: ((PositionMovement) -> Void)?
-	var jumpInterval: CGFloat?
-	var useJumpInterval: (() -> Bool)?
+	public var locationProvider: () -> CGFloat?
+	public var range: ClosedRange<CGFloat>
+	
+	public var action: ((PositionMovement) -> Void)?
+	
+	public var jumpInterval: CGFloat?
+	public var useJumpInterval: (() -> Bool)?
+	
+	public var barWidth: CGFloat
+	public var barColor: CGColor
+	public var hoverColor: CGColor
 	
 	public init(
 		locationProvider: @escaping () -> CGFloat?,
 		range: ClosedRange<CGFloat> = 0...1,
+		
 		action: ((PositionMovement) -> Void)? = nil,
+		
 		jumpInterval: CGFloat? = nil,
-		useJumpInterval: (() -> Bool)? = nil
+		useJumpInterval: (() -> Bool)? = nil,
+		
+		barWidth: CGFloat = 2,
+		barColor: CGColor = NSColor.controlTextColor.cgColor,
+		hoverColor: CGColor = NSColor.controlColor.cgColor
 	) {
 		self.locationProvider = locationProvider
 		self.range = range
 		self.action = action
 		self.jumpInterval = jumpInterval
 		self.useJumpInterval = useJumpInterval
+		
+		self.barWidth = barWidth
+		self.barColor = barColor
+		self.hoverColor = hoverColor
 	}
 	
 	public func makeNSView(context: NSViewRepresentableContext<PositionControlView>) -> PositionControlCocoa {
@@ -265,10 +281,15 @@ public struct PositionControlView: NSViewRepresentable {
 		
 		nsView.locationProvider = locationProvider
 		nsView.range = range
+		
+		nsView.action = action
+
 		nsView.jumpInterval = jumpInterval
 		nsView.useJumpInterval = useJumpInterval
 		
-		nsView.action = action
+		nsView.barWidth = barWidth
+		nsView.barColor = barColor
+		nsView.hoverColor = hoverColor
 	}
 }
 

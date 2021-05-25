@@ -114,30 +114,37 @@ public class PositionControlCocoa: NSView {
 		return round((mouseLocation - location) / jumpInterval) * jumpInterval
 	}
 		
-	private func update() {
-		func _setLocation(layer: CALayer, location: CGFloat?, jump: Bool) {
-			CATransaction.begin()
-			CATransaction.setAnimationTimingFunction(.init(name: .linear))
-				
-			if let fps = timer.fps, !(jump || layer.isHidden) {
-				CATransaction.setAnimationDuration(1 / fps)
-			}
-			else {
-				CATransaction.setDisableActions(true)
-				CATransaction.setAnimationDuration(0)
-			}
-
-			setLocation(layer, position: location)
+	func _setLocation(layer: CALayer, location: CGFloat?, jump: Bool) {
+		CATransaction.begin()
+		CATransaction.setAnimationTimingFunction(.init(name: .linear))
 			
-			CATransaction.commit()
+		if let fps = timer.fps, !(jump || layer.isHidden) {
+			CATransaction.setAnimationDuration(1 / fps)
 		}
+		else {
+			CATransaction.setDisableActions(true)
+			CATransaction.setAnimationDuration(0)
+		}
+
+		layer.removeAnimation(forKey: "position")
+		setLocation(layer, position: location)
 		
+		CATransaction.commit()
+	}
+
+	private func update() {
 		let location = locationProvider()
 		_setLocation(
 			layer: locationLayer, location: location,
 			jump: false
 		)
 
+		updateMouseLayerIfChasing(location)
+	}
+	
+	private func updateMouseLayerIfChasing(_ location: CGFloat? = nil) {
+		let location = location ?? locationProvider()
+		
 		if let location = location, let movement = currentMovement(location) {
 			_setLocation(
 				layer: hoverLayer,
@@ -181,11 +188,11 @@ public class PositionControlCocoa: NSView {
 			
 			CATransaction.commit()
 		}
-		else if timer.fps == nil {
-			// Won't redraw by itself. This will also update the location, but eh.
-			update()
-		}
-		
+
+		// We don't know when the mouse layer will update next
+		// So let's just do it.
+		updateMouseLayerIfChasing()
+
 		hoverLayer.backgroundColor = (NSEvent.pressedMouseButtons & 1) != 0 ? barColor : hoverColor
 	}
 
@@ -320,7 +327,7 @@ struct PositionControlView_Previews: PreviewProvider {
 					CGFloat(Date().timeIntervalSince(start))
 			 },
 			range: 0...10,
-			fps: 10,
+			fps: 5,
 			action: {
 				switch $0 {
 				case .absolute(let position):

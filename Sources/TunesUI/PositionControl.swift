@@ -53,6 +53,7 @@ public class PositionControlCocoa: NSView {
 
 	// shoddy helpers for better animations
 	private var isMouseFreeHovering = true
+	private var lastMovement: CGFloat = 0
 
 	public init() {
 		super.init(frame: NSRect())
@@ -141,9 +142,10 @@ public class PositionControlCocoa: NSView {
 			_setLocation(
 				layer: hoverLayer,
 				location: movement + location,
-				jump: isMouseFreeHovering
+				jump: isMouseFreeHovering || movement != lastMovement
 			)
 			isMouseFreeHovering = false
+			lastMovement = movement
 		}
 		else if !isMouseFreeHovering {
 			setLocation(hoverLayer, position: mouseLocation)

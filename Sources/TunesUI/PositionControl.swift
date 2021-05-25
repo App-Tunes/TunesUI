@@ -49,7 +49,7 @@ public class PositionControlCocoa: NSView {
 	private var mouseLocation: CGFloat? = nil
 	private var trackingArea: NSTrackingArea?
 
-	public let timer: DisplayTimer = DisplayTimer(action: nil)
+	public let timer: DisplayTimer = DisplayTimer(fps: nil, action: nil)
 
 	// shoddy helpers for better animations
 	private var isMouseFreeHovering = true
@@ -117,13 +117,13 @@ public class PositionControlCocoa: NSView {
 		func _setLocation(layer: CALayer, location: CGFloat?, jump: Bool) {
 			CATransaction.begin()
 			CATransaction.setAnimationTimingFunction(.init(name: .linear))
-												
-			if jump || layer.isHidden {
-				CATransaction.setDisableActions(true)
-				CATransaction.setAnimationDuration(0)
+				
+			if let fps = timer.fps, !(jump || layer.isHidden) {
+				CATransaction.setAnimationDuration(1 / fps)
 			}
 			else {
-				CATransaction.setAnimationDuration(1 / timer.fps)
+				CATransaction.setDisableActions(true)
+				CATransaction.setAnimationDuration(0)
 			}
 
 			setLocation(layer, position: location)
@@ -179,7 +179,7 @@ public class PositionControlCocoa: NSView {
 			
 			CATransaction.commit()
 		}
-		else if !timer.enabled {
+		else if timer.fps == nil {
 			// Won't redraw by itself. This will also update the location, but eh.
 			update()
 		}
@@ -245,7 +245,7 @@ public struct PositionControlView: NSViewRepresentable {
 	public var range: ClosedRange<CGFloat>
 	
 	public var action: ((PositionMovement) -> Void)?
-	public var updates: Bool
+	public var fps: Double?
 	
 	public var jumpInterval: CGFloat?
 	public var useJumpInterval: (() -> Bool)?
@@ -257,12 +257,12 @@ public struct PositionControlView: NSViewRepresentable {
 	public init(
 		locationProvider: @escaping () -> CGFloat?,
 		range: ClosedRange<CGFloat> = 0...1,
-		updates: Bool = true,
+		fps: Double?,
 		action: ((PositionMovement) -> Void)? = nil
 	) {
 		self.locationProvider = locationProvider
 		self.range = range
-		self.updates = updates
+		self.fps = fps
 		self.action = action
 	}
 	
@@ -295,8 +295,8 @@ public struct PositionControlView: NSViewRepresentable {
 		nsView.locationProvider = locationProvider
 		nsView.range = range
 		
-		nsView.timer.enabled = updates
 		nsView.action = action
+		nsView.timer.fps = fps
 
 		nsView.jumpInterval = jumpInterval
 		nsView.useJumpInterval = useJumpInterval
@@ -318,6 +318,7 @@ struct PositionControlView_Previews: PreviewProvider {
 					CGFloat(Date().timeIntervalSince(start))
 			 },
 			range: 0...10,
+			fps: 10,
 			action: {
 				switch $0 {
 				case .absolute(let position):

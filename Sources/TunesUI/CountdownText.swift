@@ -31,12 +31,6 @@ public struct CountdownText: View {
 	
 	public var maxDate: Date? = nil
 	public var minDate: Date? = nil
-
-	public var timer: Timer? {
-		advancesAutomatically ? Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
-			update()
-		} : nil
-	}
 	
 	public init(to referenceDate: Date, currentDate: Date = Date(), advancesAutomatically: Bool = true, maxDate: Date? = nil, minDate: Date? = nil) {
 		self.referenceDate = referenceDate
@@ -61,10 +55,8 @@ public struct CountdownText: View {
 
 	public var body: some View {
 		Text(abs(referenceDate.timeIntervalSince(currentDate)).humanReadableText)
-			.onAppear(perform: {
-				let _ = self.timer
-			})
 			.font(.system(.body, design: .monospaced))
+			.whileVisibleRunTimer(fps: 1) { update() }
 	}
 }
 

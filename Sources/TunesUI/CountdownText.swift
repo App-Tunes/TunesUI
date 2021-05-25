@@ -56,7 +56,7 @@ public struct CountdownText: View {
 	public var body: some View {
 		Text(abs(referenceDate.timeIntervalSince(currentDate)).humanReadableText)
 			.font(.system(.body, design: .monospaced))
-			.whileVisibleRunTimer(fps: 1) { update() }
+			.whileVisibleRunTimer(fps: advancesAutomatically ? 1 : nil) { update() }
 	}
 }
 

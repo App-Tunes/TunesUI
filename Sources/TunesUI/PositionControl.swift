@@ -179,6 +179,10 @@ public class PositionControlCocoa: NSView {
 			
 			CATransaction.commit()
 		}
+		else if !timer.enabled {
+			// Won't redraw by itself. This will also update the location, but eh.
+			update()
+		}
 		
 		hoverLayer.backgroundColor = (NSEvent.pressedMouseButtons & 1) != 0 ? barColor : hoverColor
 	}
@@ -241,6 +245,7 @@ public struct PositionControlView: NSViewRepresentable {
 	public var range: ClosedRange<CGFloat>
 	
 	public var action: ((PositionMovement) -> Void)?
+	public var updates: Bool
 	
 	public var jumpInterval: CGFloat?
 	public var useJumpInterval: (() -> Bool)?
@@ -252,10 +257,12 @@ public struct PositionControlView: NSViewRepresentable {
 	public init(
 		locationProvider: @escaping () -> CGFloat?,
 		range: ClosedRange<CGFloat> = 0...1,
+		updates: Bool = true,
 		action: ((PositionMovement) -> Void)? = nil
 	) {
 		self.locationProvider = locationProvider
 		self.range = range
+		self.updates = updates
 		self.action = action
 	}
 	
@@ -288,6 +295,7 @@ public struct PositionControlView: NSViewRepresentable {
 		nsView.locationProvider = locationProvider
 		nsView.range = range
 		
+		nsView.timer.enabled = updates
 		nsView.action = action
 
 		nsView.jumpInterval = jumpInterval

@@ -19,7 +19,7 @@ extension CAAnimation {
 }
 
 public class WaveformViewCocoa: NSView {
-	public var colorLUT: [CGColor] { didSet {
+	public var colorLUT: [CGColor]? { didSet {
 		if colorLUT != oldValue { needsLayout = true }
 	} }
 	public var spacing: CGFloat = 1 { didSet {
@@ -38,12 +38,13 @@ public class WaveformViewCocoa: NSView {
 		if displayWaveform != oldValue { needsLayout = true }
 	} }
 
-	public init(colorLUT: [CGColor], debounce: TimeInterval = 0.1) {
+	public init(colorLUT: [CGColor]? = nil, debounce: TimeInterval = 0.1) {
 		self.colorLUT = colorLUT
 		self.resamplingWaveform = .init(debounce: debounce, resample: nil)
 		super.init(frame: NSRect())
 
 		wantsLayer = true
+		layer!.sublayers = []
 		layer!.contentsGravity = .bottom
 		layer!.delegate = self
 //		layer!.actions = [
@@ -112,9 +113,7 @@ public class WaveformViewCocoa: NSView {
 		let barWidth = frame.size.width / (CGFloat(barCount) * (1 + spacing))
 		let barWidthHalf = barWidth / 2
 		let stride = frame.size.width / CGFloat(barCount)
-		
-		let lutCount = Float(colorLUT.count)
-		
+				
 		for i in 0 ..< barCount {
 			let center = (CGFloat(i) + 0.5) * stride
 			let layer = layer!.sublayers![i]
@@ -125,8 +124,24 @@ public class WaveformViewCocoa: NSView {
 				width: barWidth,
 				height: CGFloat(waveform.loudness[i]) * frame.height
 			)
-			layer.backgroundColor = colorLUT[min(colorLUT.count - 1, max(0, Int(waveform.pitch[i] * lutCount)))]
 		}
+		
+		if let colorLUT = colorLUT {
+			let lutCount = Float(colorLUT.count)
+
+			for i in 0 ..< barCount {
+				let layer = layer!.sublayers![i]
+
+				layer.backgroundColor = colorLUT[min(colorLUT.count - 1, max(0, Int(waveform.pitch[i] * lutCount)))]
+			}
+		}
+		else {
+			for i in 0 ..< barCount {
+				let layer = layer!.sublayers![i]
+				layer.backgroundColor = .white
+			}
+		}
+		
 		didChangeFrame = false
 
 		super.layout()

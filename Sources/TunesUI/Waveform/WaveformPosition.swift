@@ -8,7 +8,7 @@
 import Cocoa
 import SwiftUI
 
-public class WaveformPositionCocoa: NSView {
+open class WaveformPositionCocoa: NSView {
 	public let waveformView: WaveformViewCocoa
 	public let positionControl: PositionControlCocoa
 	
@@ -21,7 +21,7 @@ public class WaveformPositionCocoa: NSView {
 		sharedInit()
 	}
 	
-	required init?(coder: NSCoder) {
+	required public init?(coder: NSCoder) {
 		waveformView = .init()
 		positionControl = .init()
 
@@ -30,7 +30,7 @@ public class WaveformPositionCocoa: NSView {
 		sharedInit()
 	}
 	
-	private func sharedInit() {
+	open func sharedInit() {
 		for view in [waveformView, positionControl] {
 			view.translatesAutoresizingMaskIntoConstraints = false
 			view.frame = frame

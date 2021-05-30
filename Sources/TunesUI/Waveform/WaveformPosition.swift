@@ -31,10 +31,11 @@ public class WaveformPositionCocoa: NSView {
 	}
 	
 	private func sharedInit() {
-		waveformView.autoresizingMask = [.height, .width]
-		positionControl.autoresizingMask = [.height, .width]
-		addSubview(waveformView)
-		addSubview(positionControl)
+		for view in [waveformView, positionControl] {
+			view.autoresizingMask = [.height, .width]
+			view.frame = frame
+			addSubview(view)
+		}
 	}
 }
 

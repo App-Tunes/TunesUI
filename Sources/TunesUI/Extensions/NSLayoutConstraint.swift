@@ -11,13 +11,10 @@ public extension NSLayoutConstraint {
 	static func copyLayout(
 		from container: NSView,
 		for view: NSView,
+		attributes: [NSLayoutConstraint.Attribute] = [.leading, .trailing, .top, .bottom],
 		multiplier: [NSLayoutConstraint.Attribute: CGFloat] = [:],
 		constant: [NSLayoutConstraint.Attribute: CGFloat] = [:]
 	) -> [NSLayoutConstraint] {
-		let attributes: [NSLayoutConstraint.Attribute] = [
-			.leading, .trailing, .top, .bottom
-		]
-		
 		return attributes.map {
 			NSLayoutConstraint(
 				item: view, attribute: $0,

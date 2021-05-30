@@ -37,7 +37,11 @@ open class WaveformPositionCocoa: NSView {
 			addSubview(view)
 		}
 
-		addConstraints(NSLayoutConstraint.copyLayout(from: self, for: waveformView, multiplier: [.top: 0.7]))
+		addConstraints(NSLayoutConstraint.copyLayout(
+						from: self, for: waveformView,
+						attributes: [.leading, .trailing, .height, .bottom],
+						multiplier: [.height: 0.7]
+		))
 		addConstraints(NSLayoutConstraint.copyLayout(from: self, for: positionControl))
 	}
 }

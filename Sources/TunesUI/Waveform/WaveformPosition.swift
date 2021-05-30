@@ -35,8 +35,10 @@ public class WaveformPositionCocoa: NSView {
 			view.translatesAutoresizingMaskIntoConstraints = false
 			view.frame = frame
 			addSubview(view)
-			addConstraints(NSLayoutConstraint.copyLayout(from: self, for: view))
 		}
+
+		addConstraints(NSLayoutConstraint.copyLayout(from: self, for: waveformView, multiplier: [.top: 0.7]))
+		addConstraints(NSLayoutConstraint.copyLayout(from: self, for: positionControl))
 	}
 }
 

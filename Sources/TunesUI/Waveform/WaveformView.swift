@@ -120,12 +120,13 @@ public class WaveformViewCocoa: NSView {
 		for i in 0 ..< barCount {
 			let center = (CGFloat(i) + 0.5) * stride
 			let layer = layer!.sublayers![i]
+			let loudnessValue = waveform.loudness[i]
 
 			layer.frame = CGRect(
 				x: center - barWidthHalf,
 				y: frame.minY,
 				width: barWidth,
-				height: CGFloat(waveform.loudness[i]) * frame.height
+				height: CGFloat(loudnessValue.isNormal ? loudnessValue : 0) * frame.height
 			)
 		}
 		
@@ -134,8 +135,11 @@ public class WaveformViewCocoa: NSView {
 
 			for i in 0 ..< barCount {
 				let layer = layer!.sublayers![i]
-
-				layer.backgroundColor = colorLUT[min(colorLUT.count - 1, max(0, Int(waveform.pitch[i] * lutCount)))]
+				
+				let pitchValue = waveform.pitch[i]
+				layer.backgroundColor = pitchValue.isNormal
+					? colorLUT[min(colorLUT.count - 1, max(0, Int(pitchValue * lutCount)))]
+					: .clear
 			}
 		}
 		else {

@@ -45,7 +45,7 @@ struct WaveformPositionCocoa_Previews: PreviewProvider {
 
 		public func makeNSView(context: NSViewRepresentableContext<MockView>) -> WaveformPositionCocoa {
 			let nsView = WaveformPositionCocoa()
-			nsView.waveformView.resample = ResamplingWaveform.resampleNearest(_:toSize:)
+			nsView.waveformView.resample = Resample.nearest(_:toSize:)
 			nsView.waveformView.waveform = WaveformView_Previews.waveform()
 			return nsView
 		}

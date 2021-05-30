@@ -24,4 +24,8 @@ public struct Waveform: Hashable, Codable {
 		let zero: [Float] = Array(repeating: 0.0, count: count)
 		return Waveform(loudness: zero, pitch: zero)
 	}
+	
+	public func applying(fun: ([Float]) throws -> [Float]) rethrows -> Waveform {
+		Waveform(loudness: try fun(loudness), pitch: try fun(pitch))
+	}
 }

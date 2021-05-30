@@ -7,7 +7,7 @@
 
 import Cocoa
 
-extension NSLayoutConstraint {
+public extension NSLayoutConstraint {
 	static func copyLayout(from container: NSView, for view: NSView) -> [NSLayoutConstraint] {
 		return [
 			NSLayoutConstraint(item: view, attribute: .leading, relatedBy: .equal, toItem: container, attribute: .leading, multiplier: 1, constant: 0),

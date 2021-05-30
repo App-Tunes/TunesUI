@@ -8,13 +8,13 @@
 import Foundation
 import SwiftUI
 
-extension Animation {
-	public static var instant: Animation { .linear(duration: 0) }
+public extension Animation {
+	static var instant: Animation { .linear(duration: 0) }
 }
 
-extension View {
+public extension View {
 	/// Animate ONLY IF the identity changes. Sort of like the opposite of animation(:, value:)
-	public func animation<E : Equatable>(_ animation: Animation, identity: E) -> some View {
+	func animation<E : Equatable>(_ animation: Animation, identity: E) -> some View {
 		self.animation(nil, value: identity).animation(animation)
 	}
 }

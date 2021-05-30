@@ -14,19 +14,27 @@ public class WaveformPositionCocoa: NSView {
 	
 	public init() {
 		waveformView = .init()
-		waveformView.autoresizingMask = [.height, .width]
-		
 		positionControl = .init()
-		positionControl.autoresizingMask = [.height, .width]
 
 		super.init(frame: NSRect())
 
-		addSubview(waveformView)
-		addSubview(positionControl)
+		sharedInit()
 	}
 	
 	required init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
+		waveformView = .init()
+		positionControl = .init()
+
+		super.init(coder: coder)
+
+		sharedInit()
+	}
+	
+	private func sharedInit() {
+		waveformView.autoresizingMask = [.height, .width]
+		positionControl.autoresizingMask = [.height, .width]
+		addSubview(waveformView)
+		addSubview(positionControl)
 	}
 }
 

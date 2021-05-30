@@ -62,6 +62,13 @@ public class WaveformViewCocoa: NSView {
 		}
 	}
 	
+	required public init?(coder: NSCoder) {
+		// eh, but k
+		self.colorLUT = nil
+		self.resamplingWaveform = .init(debounce: 0.1, resample: nil)
+		super.init(coder: coder)
+	}
+
 	public var waveform: Waveform? {
 		get { resamplingWaveform.source }
 		set { resamplingWaveform.source = newValue }
@@ -70,10 +77,6 @@ public class WaveformViewCocoa: NSView {
 	public var resample: ResamplingWaveform.Resampler? {
 		get { resamplingWaveform.resample }
 		set { resamplingWaveform.resample = newValue }
-	}
-
-	required public init?(coder: NSCoder) {
-		fatalError("init(coder:) has not been implemented")
 	}
 	
 	private func calculateDesiredCount() {

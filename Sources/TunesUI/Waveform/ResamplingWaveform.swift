@@ -11,7 +11,16 @@ import Combine
 public class ResamplingWaveform: ObservableObject {
 	public typealias Resampler = ([Float], Int) throws -> [Float]
 	
-	public let debounce: TimeInterval
+	public var debounce: TimeInterval {
+		didSet {
+			if oldValue != debounce { observe() }
+		}
+	}
+	public var qos: DispatchQoS.QoSClass = .default {
+		didSet {
+			if oldValue != qos { observe() }
+		}
+	}
 	
 	@Published public var source: Waveform? = nil
 	@Published public var desiredCount: Int = 0
@@ -24,7 +33,12 @@ public class ResamplingWaveform: ObservableObject {
 	public init(debounce: TimeInterval, resample: Resampler?) {
 		self.debounce = debounce
 		self.resample = resample
-		let scheduler = DispatchQueue.global(qos: .default)
+		
+		observe()
+	}
+	
+	private func observe() {
+		let scheduler = DispatchQueue.global(qos: qos)
 		
 		let liveCount = $desiredCount
 			.debounce(for: .seconds(debounce), scheduler: scheduler)

@@ -78,15 +78,17 @@ public class WaveformViewCocoa: NSView {
 	
 	private func setupObserver() {
 		waveformObserver?.cancel()
-		waveformObserver = $waveform.combineLatest($desiredCount, $resample).sink { [weak self] (waveform, desiredCount, resample) in
-			guard let resample = resample else {
-				self?.updateDisplayWaveform(waveform)
-				return
+		waveformObserver = $waveform.combineLatest($desiredCount, $resample)
+			.receive(on: RunLoop.main)
+			.sink { [weak self] (waveform, desiredCount, resample) in
+				guard let resample = resample else {
+					self?.updateDisplayWaveform(waveform)
+					return
+				}
+				
+				let resampled: Waveform = waveform.applying { resample($0, desiredCount) }
+				self?.updateDisplayWaveform(resampled)
 			}
-			
-			let resampled: Waveform = waveform.applying { resample($0, desiredCount) }
-			self?.updateDisplayWaveform(resampled)
-		}
 	}
 	
 	private func ensureSublayerCount<T: CALayer>(_ count: Int, of kind: T.Type) {

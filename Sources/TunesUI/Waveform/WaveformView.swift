@@ -138,7 +138,7 @@ public class WaveformViewCocoa: NSView {
 				x: center - barWidthHalf,
 				y: frame.minY,
 				width: barWidth,
-				height: CGFloat(loudnessValue.isNormal ? loudnessValue : 0) * frame.height
+				height: CGFloat(loudnessValue.isNormal ? max(0, min(1, loudnessValue)) : 0) * frame.height
 			)
 		}
 		

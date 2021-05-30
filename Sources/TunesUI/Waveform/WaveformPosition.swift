@@ -32,9 +32,10 @@ public class WaveformPositionCocoa: NSView {
 	
 	private func sharedInit() {
 		for view in [waveformView, positionControl] {
-			view.autoresizingMask = [.height, .width]
+			view.translatesAutoresizingMaskIntoConstraints = false
 			view.frame = frame
 			addSubview(view)
+			addConstraints(NSLayoutConstraint.copyLayout(from: self, for: view))
 		}
 	}
 }

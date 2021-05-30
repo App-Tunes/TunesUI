@@ -74,7 +74,7 @@ public class PositionControlCocoa: NSView {
 			self.layer!.addSublayer(layer)
 		}
 		
-		locationLayer.backgroundColor = self.hoverColor
+		locationLayer.backgroundColor = self.barColor
 		hoverLayer.backgroundColor = self.hoverColor
 
 		timer.action = { [weak self] in

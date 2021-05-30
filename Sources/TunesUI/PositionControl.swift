@@ -14,7 +14,7 @@ public enum PositionMovement {
 }
 
 public class PositionControlCocoa: NSView {
-	public var range: ClosedRange<CGFloat> = 1...1 {
+	public var range: ClosedRange<CGFloat> = 0...1 {
 		didSet { needsLayout = true }
 	}
 	

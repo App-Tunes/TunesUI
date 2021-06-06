@@ -243,6 +243,10 @@ public class PositionControlCocoa: NSView {
 		setLocation(hoverLayer, position: nil)
 		mouseLocation = nil
 	}
+	
+	public override func viewDidMoveToWindow() {
+		timer.observeOcclusion(ofView: self)
+	}
 }
 
 extension PositionControlCocoa: CALayerDelegate {

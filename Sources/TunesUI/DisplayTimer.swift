@@ -35,7 +35,7 @@ public class DisplayTimer {
 	}
 	
 	private func updateTimer() {
-		guard let fps = fps else {
+		guard let fps = fps, isVisible else {
 			timer?.invalidate()
 			timer = nil
 			return

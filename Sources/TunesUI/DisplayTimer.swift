@@ -20,7 +20,14 @@ public class DisplayTimer {
 	private var isVisibleObserver: NSObjectProtocol?
 	public var isVisible = true {
 		didSet {
-			if isVisible != oldValue { updateTimer() }
+			if isVisible != oldValue {
+				updateTimer()
+				if isVisible {
+					// Changed to visible; let's fire now to catch up
+					// Timer is re-constructed and won't fire until date.
+					self.action?()
+				}
+			}
 		}
 	}
 

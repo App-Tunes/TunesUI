@@ -8,7 +8,7 @@
 import SwiftUI
 
 @available(OSX 10.15, *)
-protocol AudioDeviceProvider: ObservableObject {
+public protocol AudioDeviceProvider: ObservableObject {
 	associatedtype Option: AudioDevice
 	
 	var options: [Option] { get }

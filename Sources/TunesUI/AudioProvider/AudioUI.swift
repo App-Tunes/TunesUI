@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-enum AudioUI {
-	static func imageForVolume(_ volume: Double) -> Image {
+public enum AudioUI {
+	public static func imageForVolume(_ volume: Double) -> Image {
 		Image(systemName:
 			volume == 0 ? "speaker.fill" :
 			volume < 0.33 ? "speaker.wave.1.fill" :

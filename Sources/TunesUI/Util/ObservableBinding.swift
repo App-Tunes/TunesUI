@@ -7,7 +7,7 @@
 
 import Combine
 
-class ObservableBinding<Value>: ObservableObject {
+public class ObservableBinding<Value>: ObservableObject {
 	private class Constant: ObservableObject {
 		@Published var value: Value
 		init(_ value: Value) { self.value = value }
@@ -15,10 +15,10 @@ class ObservableBinding<Value>: ObservableObject {
 	
 	private var observation: AnyCancellable?
 	
-	let get: () -> Value
-	let set: (Value) -> Void
+	public let get: () -> Value
+	public let set: (Value) -> Void
 	
-	init<T: ObservableObject>(_ object: T, value: ReferenceWritableKeyPath<T, Value>) {
+	public init<T: ObservableObject>(_ object: T, value: ReferenceWritableKeyPath<T, Value>) {
 		get = { object[keyPath: value] }
 		set = { object[keyPath: value] = $0 }
 		observation = object.objectWillChange.sink { [weak self] _ in
@@ -26,11 +26,11 @@ class ObservableBinding<Value>: ObservableObject {
 		}
 	}
 	
-	static func constant(_ value: Value) -> ObservableBinding {
+	public static func constant(_ value: Value) -> ObservableBinding {
 		.init(Constant(value), value: \.value)
 	}
 
-	var value: Value {
+	public var value: Value {
 		get { get() }
 		set { set(newValue) }
 	}

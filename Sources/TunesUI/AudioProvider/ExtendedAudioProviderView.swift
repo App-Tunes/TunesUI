@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct ExtendedAudioDeviceView<Device: AudioDevice>: View {
-	@ObservedObject var device: Device
+public struct ExtendedAudioDeviceView<Device: AudioDevice>: View {
+	@ObservedObject public var device: Device
 	
-	var body: some View {
+	public var body: some View {
 		HStack {
 			Slider(value: $device.volume, in: 0...1)
 			

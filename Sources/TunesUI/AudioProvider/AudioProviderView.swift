@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct AudioProviderView<Provider: AudioDeviceProvider>: View {
-	@ObservedObject var provider: Provider
-	@ObservedObject var current: ObservableBinding<Provider.Option?>
+public struct AudioProviderView<Provider: AudioDeviceProvider>: View {
+	@ObservedObject public var provider: Provider
+	@ObservedObject public var current: ObservableBinding<Provider.Option?>
 	
 	@State private var pressOption: Provider.Option?
 	@State private var hoverOption: Provider.Option?
 
-	func optionView(_ option: Provider.Option) -> some View {
+	public func optionView(_ option: Provider.Option) -> some View {
 		HStack {
 			Text(option.icon)
 				.frame(width: 25, alignment: .center)
@@ -32,13 +32,13 @@ struct AudioProviderView<Provider: AudioDeviceProvider>: View {
 		}.frame(maxWidth: nil)
 	}
 	
-	func backgroundOpacity(_ option: Provider.Option) -> Double? {
+	public func backgroundOpacity(_ option: Provider.Option) -> Double? {
 		pressOption == option ? 0.4 :
 		hoverOption == option ? 0.2 :
 			nil
 	}
 
-	var body: some View {
+	public var body: some View {
 		VStack {
 			HStack {
 				provider.icon

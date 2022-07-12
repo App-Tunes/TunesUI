@@ -24,9 +24,7 @@ public struct AudioProviderView<Provider: AudioDeviceProvider>: View {
 			Text(option.icon)
 				.frame(width: 25, alignment: .center)
 			Text(option.name ?? "Unknown Device")
-				.frame(width: 300, alignment: .leading)
-			
-			Spacer()
+				.frame(minWidth: 50, maxWidth: .infinity, alignment: .leading)
 			
 			Text("􀆅").foregroundColor(Color.white.opacity(
 				current.value == option ? 1 :
@@ -34,7 +32,7 @@ public struct AudioProviderView<Provider: AudioDeviceProvider>: View {
 				0
 			))
 				.frame(width: 25, alignment: .leading)
-		}.frame(maxWidth: nil)
+		}.frame(maxWidth: .infinity)
 	}
 	
 	public func backgroundOpacity(_ option: Provider.Option) -> Double? {
@@ -54,7 +52,7 @@ public struct AudioProviderView<Provider: AudioDeviceProvider>: View {
 				if let device = current.value {
 					Text(device.name ?? "Unknown Device").bold()
 						.padding(.trailing)
-						.frame(maxWidth: .infinity, alignment: .leading)
+						.frame(minWidth: 50, maxWidth: .infinity, alignment: .leading)
 					
 					ExtendedAudioDeviceView(device: device)
 						.frame(width: 150)
@@ -63,14 +61,19 @@ public struct AudioProviderView<Provider: AudioDeviceProvider>: View {
 					Text("None Selected").bold()
 						.foregroundColor(.secondary)
 						.padding(.trailing)
-						.frame(maxWidth: .infinity, alignment: .leading)
+						.frame(minWidth: 50, maxWidth: .infinity, alignment: .leading)
 
-					Slider(value: .constant(1), in: 0...1)
-						.disabled(true)
+					HStack(spacing: 8) {
+						Spacer()
+						
+						Slider(value: .constant(0), in: 0...1)
+							.frame(maxWidth: 100)
+
+						AudioUI.imageForVolume(0)
+							.frame(width: 25, alignment: .leading)
+					}
 						.frame(width: 150)
-
-					AudioUI.imageForVolume(0)
-						.frame(width: 25, alignment: .leading)
+						.disabled(true)
 				}
 			}
 				.frame(height: 20)

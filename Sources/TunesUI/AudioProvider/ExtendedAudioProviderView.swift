@@ -15,9 +15,12 @@ public struct ExtendedAudioDeviceView<Device: AudioDevice>: View {
 	}
 	
 	public var body: some View {
-		HStack {
-			Slider(value: $device.volume, in: 0...1)
+		HStack(spacing: 8) {
+			Spacer()
 			
+			Slider(value: $device.volume, in: 0...1)
+				.frame(maxWidth: 100)
+
 			AudioUI.imageForVolume(device.volume)
 				.frame(width: 25, alignment: .leading)
 		}

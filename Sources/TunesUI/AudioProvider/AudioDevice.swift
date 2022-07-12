@@ -13,9 +13,3 @@ public protocol AudioDevice: ObservableObject, Identifiable, Equatable {
 
 	var volume: Double { get set }
 }
-
-class UnsupportedAudioDeviceError: LocalizedError {
-	var errorDescription: String? {
-		"Track is not compatible with any of the selected audio devices."
-	}
-}

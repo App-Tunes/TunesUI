@@ -14,6 +14,11 @@ public struct AudioProviderView<Provider: AudioDeviceProvider>: View {
 	@State private var pressOption: Provider.Option?
 	@State private var hoverOption: Provider.Option?
 
+	public init(provider: Provider, current: ObservableBinding<Provider.Option?>) {
+		self.provider = provider
+		self.current = current
+	}
+	
 	public func optionView(_ option: Provider.Option) -> some View {
 		HStack {
 			Text(option.icon)

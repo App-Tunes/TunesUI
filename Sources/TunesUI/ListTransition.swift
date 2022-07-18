@@ -10,13 +10,13 @@ import Foundation
 import Cocoa
 
 /// TODO This probably wants to be rewritten. It works though.
-enum ListTransition<Element: Equatable> {
+public enum ListTransition<Element: Equatable> {
 	case insert(rows: IndexSet)
 	case remove(rows: IndexSet)
 	case move(sequence: [(Int, Int)])
 	case reload(previousSize: Int, newSize: Int)
 	
-	static func findBest(before: [Element]?, after: [Element]?, maxRows: Int = 100) -> ListTransition {
+	public static func findBest(before: [Element]?, after: [Element]?, maxRows: Int = 100) -> ListTransition {
 		let reload = ListTransition.reload(previousSize: before?.count ?? 0, newSize: after?.count ?? 0)
 		
 		guard let before = before, let after = after else {
@@ -50,7 +50,7 @@ enum ListTransition<Element: Equatable> {
 		return reload
 	}
 	
-	static func difference(lhs: [Element], rhs: [Element]) -> (Bool, IndexSet)? {
+	public static func difference(lhs: [Element], rhs: [Element]) -> (Bool, IndexSet)? {
 		let leftSmaller = lhs.count < rhs.count
 		let (left, right) = leftSmaller ? (lhs, rhs) : (rhs, lhs)
 		var difference: [Int] = []
@@ -77,7 +77,7 @@ enum ListTransition<Element: Equatable> {
 		return leftSmaller ? (true, IndexSet(difference)) : (false, IndexSet(difference))
 	}
 	
-	static func movement(before: [Element], after: [Element]) -> [(Int, Int)]? {
+	public static func movement(before: [Element], after: [Element]) -> [(Int, Int)]? {
 		guard after.count == before.count else {
 			return nil
 		}
@@ -138,7 +138,7 @@ enum ListTransition<Element: Equatable> {
 	}
 }
 
-extension ListTransition {
+public extension ListTransition {
 	func executeAnimationsInTableView(_ tableView: NSTableView) {
 		switch self {
 		case .reload:
